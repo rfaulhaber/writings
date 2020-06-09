@@ -150,8 +150,9 @@ function nextRetrieval(data, error) {
 
 #+RESULTS:
 
-This is referred to as "callback hell", because, well... it looks like
-hell.
+This is referred to as "callback hell", because, aside from /looking/ like hell,
+it creates a maintenance issue: we're left with a bunch of callbacks that may be
+difficult to read and mentally parse through.
 
 Neither of these examples consider variables that live outside the
 context of these functions. Code like this used to be quite commonplace.
