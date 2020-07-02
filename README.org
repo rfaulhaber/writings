@@ -1,2 +1,6 @@
 * writings
 My writings published online, in their original org format.
+
+I use [[https://ox-hugo.scripter.co/][ox-hugo]] to generate the pages on my blog, and for my own convenience
+everything is now in one file. If you don't use Emacs, it may be difficult to
+read this file!

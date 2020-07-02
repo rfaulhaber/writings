@@ -1,22 +1,98 @@
-#+TITLE: A Guide to Promises in JavaScript
-#+AUTHOR: Ryan Faulhaber
-#+EMAIL: faulhaberryan@gmail.com
+#+HUGO_BASE_DIR: ~/Projects/personal-site
 
+* About
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: /
+:EXPORT_FILE_NAME: _index
+:END:
+** Who?
+:PROPERTIES:
+:CUSTOM_ID: who
+:END:
+
+I'm a developer living in Cleveland, Ohio. My interests include web
+development, programming languages, and, increasingly, systems
+programming.
+
+Much of my professional work is web development-related. I've been
+writing JavaScript since 2014 and I know my way around many big
+frameworks. Projects outside of work tend to be related to web
+development or Rust.
+
+** Projects
+   :PROPERTIES:
+   :CUSTOM_ID: projects
+   :END:
+
+All my projects can be found on my
+[[https://github.com/rfaulhaber][GitHub]].
+
+On top of that, I'm currently looking to contribute to open source
+projects and interested in pursuing freelance work!
+
+** Contact
+   :PROPERTIES:
+   :CUSTOM_ID: contact
+   :END:
+
+- [[mailto:faulhaberryan@gmail.com][Email 1]]
+  [[mailto:ryan@sys9.net][Email 2]] ([[/gpg1.txt][GPG]])
+- [[https://github.com/rfaulhaber][GitHub]]
+- [[https://dev.to/rfaulhaber][dev.to]]
+- [[https://www.linkedin.com/in/ryan-faulhaber-7438111a8/][LinkedIn]]
+
+Address, phone number, and resume can be provided upon request.
+
+** About this site
+   :PROPERTIES:
+   :CUSTOM_ID: about-this-site
+   :END:
+
+This site was generated using [[https://gohugo.io][Hugo]].
+
+This site's theme is
+[[https://github.com/rfaulhaber/duotone-theme-hugo][duotone-theme-hugo]].
+* Working With Me
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: /
+:EXPORT_FILE_NAME: working
+:END:
+If you are in need of some temporary, part-time freelance work (that is,
+you don't mind me working in the evenings! I do have a full-time job!),
+please get in touch. I'm familiar with a wide variety of languages,
+frameworks, tools, and platforms. If there's something I don't know, I
+trust that I can figure it out quickly.
+
+My experience, as stated partially above, includes:
+
+- Full-stack web development
+  - Front-end (JavaScript, TypeScript, Vue, React, Angular)
+  - Back-end (Go, Rust, Node.js)
+- Mobile development (Android with Java and Kotlin, React Native)
+- Development on cloud platforms such as AWS, Azure, Google Cloud, etc.
+* Posts
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: posts
+:END:
+** A Guide to Promises in JavaScript
+CLOSED: [2020-06-02 Tue 14:00]
+:PROPERTIES:
+:EXPORT_FILE_NAME: js-promises
+:END:
 Although the =async= and =await= keywords are now part of standard JavaScript,
 under the hood they ultimately use Promises. Here we'll explore what Promises
 are, why they're needed, and how you can "promisify" callbacks in JavaScript.
 
 I find a lot of newcomers are often confused by terms like "callbacks",
-"Promises", and what exactly =async= and =await= do. I hope to clear
-that up with this article.
+"Promises", and what exactly =async= and =await= do. I hope to clear that up
+with this article.
 
 For the sake of clarity, this guide will use =function= syntax, and not
 arrow functions. If you know how to use arrow functions, you can replace
 much of this code with arrow functions and have it behave similarly.
 Also, some of these code samples are more verbose than they need to be.
 Methods like =Promise.resolve()= can cut down on boilerplate code.
-
-* First Class Functions in JavaScript
+*** First Class Functions in JavaScript
    :PROPERTIES:
    :CUSTOM_ID: first-class-functions-in-javascript
    :END:
@@ -24,7 +100,7 @@ Methods like =Promise.resolve()= can cut down on boilerplate code.
 In JavaScript, functions can be used like any other variable. This makes
 them /first class/. For example:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 function callFunc(val, f) {
     return f(val);
 }
@@ -52,7 +128,7 @@ You can pass an anonymous function to another function directly if you
 so choose. We can rewrite the call to =callFunc= using an anonymous
 function in the following way:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 callFunc(3, function(x) {
     return x.toString();
 }); // => '3'
@@ -64,7 +140,7 @@ One interesting aspect of this feature is that it allows for a deferral
 of execution of sorts. The function we pass to =callFunc= doesn't
 actually get called until the function itself calls it.
 
-* (Re)-Introducing Callbacks
+*** (Re)-Introducing Callbacks
    :PROPERTIES:
    :CUSTOM_ID: re-introducing-callbacks
    :END:
@@ -78,7 +154,7 @@ an asynchronous operation.
 
 A classic example is with JavaScript's =setTimeout= function:
 
-#+BEGIN_SRC js :exports both
+#+BEGIN_SRC js -n :exports both
 setTimeout(function() {
     console.log('hello world!');
 }, 2000);
@@ -108,7 +184,7 @@ following example. Suppose we have a function called =getDataFromServer=
 that takes some data necessary for a database query and a callback, to
 be executed upon the completion of that callout:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 // `getDataFromServer` takes a callback and data and passes `data` and
 // `error` to whatever callback we provide
 getDataFromServer(someInitialData, function(data, error) {
@@ -130,7 +206,7 @@ getDataFromServer(someInitialData, function(data, error) {
 It's possible to rewrite the above code using named functions but it
 doesn't make it much less confusing.
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 getDataFromServer(initialData, firstRetrieval);
 
 function firstRetrieval(data, error) {
@@ -159,7 +235,7 @@ context of these functions. Code like this used to be quite commonplace.
 Maybe you need to update something on the DOM once you get the first
 query. Very confusing!
 
-* Enter Promises
+*** Enter Promises
    :PROPERTIES:
    :CUSTOM_ID: enter-promises
    :END:
@@ -171,7 +247,7 @@ synchronous.
 A =Promise= is just an object. In its most common usage it can be
 constructed as such:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 const myPromise = new Promise(executor);
 #+END_SRC
 
@@ -184,7 +260,7 @@ evaluated as soon as the =Promise= is constructed.
 
 A trivial example of a =Promise= can be seen with =setTimeout=
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 const myPromise = new Promise(function(resolve, reject) {
     setTimeout(function() {
         const message = 'hello world';
@@ -210,7 +286,7 @@ just added some more decorum around our callback code.
 In order to make this code a little more useful, we'll invoke the
 Promise's =.then()= method:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 const myPromise = new Promise(function(resolve, reject) {
     setTimeout(function() {
         resolve('hello world');
@@ -235,7 +311,7 @@ It's important to note that =.then()= actually returns another
 returned in the function passed to a =.then()= is passed to the next
 =.then()=.
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 const myPromise = new Promise(function(resolve, reject) {
     setTimeout(function() {
         resolve('hello world');
@@ -258,7 +334,7 @@ handling. This is where the =reject= function comes into play. The
 =.catch()= callback will be called not only if the =reject= function is
 called, but if /any/ of the =.then()= callbacks throw an error.
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 const myPromise = new Promise(function(resolve, reject) {
     setTimeout(function() {
         reject('hello world');
@@ -281,7 +357,7 @@ rejected.
 
 The above code could just as well be written:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 const myPromise = new Promise(function(resolve, reject) {
     setTimeout(function() {
         reject('hello world');
@@ -302,7 +378,7 @@ distinguishes this from using a =.catch()= is that this form corresponds
 directly to a specific handler. This is useful if you need to handle the
 failure of one callback specifically.
 
-* Promisifying
+*** Promisifying
    :PROPERTIES:
    :CUSTOM_ID: promisifying
    :END:
@@ -319,7 +395,7 @@ Converting a function that uses callbacks into one that utilizes
 We can make our =getDataFromServer= function asynchronous by wrapping it
 in a =Promise= as described:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 function getDataFromServerAsync(data) {
     return new Promise(function(resolve, reject) {
         getDataFromServer(data, function(result, error) {
@@ -340,7 +416,7 @@ function getDataFromServerAsync(data) {
 
 This allows us to chain the =Promise= returned.
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 getDataFromServerAsync(data)
     .then(function(result) {
         return getDataFromServerAsync(result);
@@ -366,7 +442,7 @@ scope is still an issue.
 For example, I've seen newcomers to =Promise= write code similar to the
 following:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 let resultVal;
 
 new Promise(function(resolve) {
@@ -397,7 +473,7 @@ way around it. Usually you just end up putting more code in the
 
 The most straightforward way around this, however, is to use a new feature...
 
-* =async= / =await=
+*** =async= / =await=
 :PROPERTIES:
 :CUSTOM_ID: enter-async-await
 :END:
@@ -411,7 +487,7 @@ these keywords further.
 
 Consider a simple function:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 function foo() {
     // note that there exists a function called `Promise.resolve`
     // which, when used, is equivalent to the following code
@@ -428,7 +504,7 @@ All this function does is just return ='hello world'= in a Promise.[fn:2]
 
 The equivalent code using =async= is:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 async function foo() {
     return 'hello world';
 }
@@ -448,7 +524,7 @@ before the value was set. =await= lets you get around that.
 If we have a function that uses our =getDataFromServerAsync= function
 above, we can use it in an =async= function as such:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 async function doSomething() {
     const data = await getDataFromServerAsync();
     console.log('data', data);
@@ -467,7 +543,7 @@ won't be executed until =getDataFromServerAsync= is done.
 But what if =getDataFromServerAsync= is rejected? It will throw an exception!
 We can, of course, handle this in a =try/catch= block:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n
 async function doSomething() {
     try {
         const data = await rejectMe();
@@ -497,7 +573,7 @@ that =async= and =await= are just syntactic sugar for Promises, and the
 code, such as [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all][=Promise.all=]], which allows you to wait for an array of Promises
 to complete.
 
-* Conclusion
+*** Conclusion
    :PROPERTIES:
    :CUSTOM_ID: conclusion
    :END:
@@ -522,23 +598,19 @@ This article was written using [[https://orgmode.org][Org Mode]] for Emacs. If y
 would like the Org mode version of this article, see my
 [[https://github.com/rfaulhaber/writings][writings repo]], where the .org file
 will be published!
-* Further reading
-   :PROPERTIES:
-   :CUSTOM_ID: further-reading
-   :END:
+*** Further reading
+:PROPERTIES:
+:CUSTOM_ID: further-reading
+:END:
 - [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise][Promises on MDN]]
 - [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function][Async/Await on MDN]]
-* Footnotes
-   :PROPERTIES:
-   :CUSTOM_ID: footnotes
-   :END:
-
-[fn:2] This function's body can also be written as:
-=return Promise.resolve('hello world');=
-
+*** Footnotes
+:PROPERTIES:
+:CUSTOM_ID: footnotes
+:END:
 [fn:1] A brief explanation of named and anonymous functions:
 
-#+BEGIN_SRC js
+#+BEGIN_SRC js -n :eval never
 // named, function declaration
 function foo() {}
 
@@ -558,4 +630,7 @@ const foo = function() {};
 const foo = () => {};
 #+END_SRC
 
-#+RESULTS:
+[fn:2] This function's body can also be written as:
+=return Promise.resolve('hello world');=
+** TODO Moving to Emacs
+** TODO The Importance of Functional Programming in JavaScript
